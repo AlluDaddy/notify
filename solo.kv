@@ -1,0 +1,171 @@
+# solo.kv
+
+<SoloLevelingLayout>:
+    # Set the main layout to the Beru background image
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            source: 'beru.jpg' # Full screen background image
+            size: self.size
+            pos: self.pos
+            
+    orientation: "vertical"
+    padding: 20
+    spacing: 20
+
+    # Title with Blue Flame animation
+    BoxLayout:
+        size_hint_y: 0.15
+        orientation: 'horizontal'
+        spacing: 10
+        padding: [0, 10, 0, 0] # Top padding
+
+        Image:
+            source: 'flame.gif' # Animated GIF for the flame aura
+            anim_delay: 0.1
+            allow_stretch: True
+            size_hint_x: 0.2
+
+        Label:
+            text: "[b]SHADOW MONARCH'S REMINDERS[/b]"
+            markup: True
+            font_size: '24sp'
+            color: (0.7, 0.9, 1, 1) # Light blue/silver color
+            size_hint_x: 0.8
+            text_size: self.size
+            valign: 'middle'
+            halign: 'center'
+
+    # Input Area
+    BoxLayout:
+        id: input_area
+        size_hint_y: 0.18
+        orientation: "vertical"
+        spacing: 5
+        
+        # Grid to hold the inputs and button
+        GridLayout:
+            cols: 3
+            spacing: 10
+            size_hint_y: 0.7
+            
+            TextInput:
+                id: name_input
+                hint_text: "Task Name (e.g. Drink Water)"
+                size_hint_x: 1.5
+                background_color: 0.1, 0.1, 0.1, 0.7 # Dark transparent background
+                foreground_color: 0.7, 0.9, 1, 1 # Light blue text
+                multiline: False
+                padding: [10, 10, 10, 10]
+                
+            TextInput:
+                id: time_input
+                hint_text: "Interval (min) or Time (HH:MM)"
+                size_hint_x: 1.5
+                background_color: 0.1, 0.1, 0.1, 0.7
+                foreground_color: 0.7, 0.9, 1, 1
+                multiline: False
+                padding: [10, 10, 10, 10]
+                
+            Button:
+                id: add_btn
+                text: "Add"
+                size_hint_x: 1
+                background_normal: ''
+                background_color: 0.2, 0.4, 0.8, 0.9 # Dark Blue button
+                color: 1, 1, 1, 1
+                on_press: root.add_reminder(self)
+        
+        # Status/Error Label
+        Label:
+            id: status_label
+            text: ""
+            color: (1, 0.3, 0.3, 1) # Red for errors
+            size_hint_y: 0.3
+
+    # Scrollable Reminder List
+    ScrollView:
+        id: scroll
+        size_hint_y: 0.45
+        do_scroll_x: False
+        
+        # Container for reminder items
+        BoxLayout:
+            id: reminder_box
+            orientation: "vertical"
+            size_hint_y: None
+            height: self.minimum_height
+            spacing: 15
+
+    # Hero Images (S-Rank Hunters)
+    BoxLayout:
+        id: bottom_images
+        size_hint_y: 0.22
+        spacing: 20
+        padding: [0, 10, 0, 0]
+
+        Image:
+            source: 'hero.png' # Jinwoo Image
+            allow_stretch: True
+            keep_ratio: False
+            opacity: 0.9
+
+        Image:
+            source: 'beru.jpg' # Beru Image (Assuming a cropped image exists)
+            allow_stretch: True
+            keep_ratio: False
+            opacity: 0.9
+
+
+# --- Custom Reminder Item Style ---
+<ReminderItem>:
+    # Base styling for the list item
+    orientation: "horizontal"
+    size_hint_y: None
+    height: 70
+    padding: 10
+    spacing: 10
+    
+    # Custom Background: Dark metal plate look
+    canvas.before:
+        Color:
+            rgba: 0.1, 0.15, 0.2, 0.7 # Dark, slightly blueish background
+        Rectangle:
+            size: self.size
+            pos: self.pos
+        Color:
+            rgba: 0.3, 0.5, 0.7, 0.2 # Light border for metallic effect
+        Rectangle:
+            size: self.size[0], 2
+            pos: self.pos[0], self.pos[1] + self.size[1] - 2 # Top border
+
+    # 1. Reminder Name Label (Left)
+    Label:
+        id: lbl
+        text: root.name
+        markup: True
+        color: (0.7, 0.9, 1, 1)
+        font_size: '18sp'
+        size_hint_x: 0.45
+        text_size: self.size
+        valign: 'middle'
+        halign: 'left'
+
+    # 2. Status Label (Center)
+    Label:
+        text: root.value_display
+        color: (0.5, 0.7, 0.9, 1)
+        font_size: '14sp'
+        size_hint_x: 0.3
+
+    # 3. Toggle Button (Right)
+    Button:
+        id: start_btn
+        # Dynamically change text based on 'active' property
+        text: "STOP" if root.active else "ACTIVATE" 
+        size_hint_x: 0.25
+        background_normal: ''
+        # Dynamic color change based on state
+        background_color: (0.8, 0.2, 0.2, 0.9) if root.active else (0.2, 0.6, 0.8, 0.9) # Red (Stop) vs Blue (Activate)
+        color: 1, 1, 1, 1
